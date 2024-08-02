@@ -7,7 +7,7 @@ import ConversationList from './components/ConversationList';
 import ErrorMessage from './components/ErrorMessage';
 
 // Heroku 앱 URL을 상수로 정의
-const API_URL = 'https://temporarymagicnote.herokuapp.com';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 function App() {
   const [assistants, setAssistants] = useState([]);
