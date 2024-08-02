@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './App.css';
 import AssistantList from './components/AssistantList';
@@ -8,11 +8,15 @@ import ErrorMessage from './components/ErrorMessage';
 
 function App() {
   const [assistants, setAssistants] = useState([]);
-  const [selectedAssistant, setSelectedAssistant] = useState(null);
   const [conversations, setConversations] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const saveConversationsToLocalStorage = useCallback(() => {
+    localStorage.setItem('conversations', JSON.stringify(conversations));
+    console.log('Saved conversations:', conversations);
+  }, [conversations]);
 
   useEffect(() => {
     fetchAssistants();
@@ -23,7 +27,7 @@ function App() {
     if (conversations.length > 0) {
       saveConversationsToLocalStorage();
     }
-  }, [conversations]);
+  }, [conversations, saveConversationsToLocalStorage]);
 
   const fetchAssistants = async () => {
     setIsLoading(true);
@@ -48,11 +52,6 @@ function App() {
     }
   };
 
-  const saveConversationsToLocalStorage = () => {
-    localStorage.setItem('conversations', JSON.stringify(conversations));
-    console.log('Saved conversations:', conversations);
-  };
-
   const createConversation = async (assistant) => {
     setIsLoading(true);
     setError(null);
@@ -67,7 +66,6 @@ function App() {
       const updatedConversations = [...conversations, newConversation];
       setConversations(updatedConversations);
       setActiveConversation(newConversation);
-      saveConversationsToLocalStorage();
     } catch (error) {
       console.error('대화 생성 오류:', error);
       setError('새 대화를 시작하는데 실패했습니다.');
@@ -105,7 +103,6 @@ function App() {
 
       setConversations(updatedConversations);
       setActiveConversation(updatedConversations.find(conv => conv.id === activeConversation.id));
-      saveConversationsToLocalStorage();
     } catch (error) {
       console.error('메시지 전송 오류:', error);
       setError('메시지 전송에 실패했습니다.');
@@ -117,7 +114,6 @@ function App() {
   const selectConversation = async (conversation) => {
     setActiveConversation(conversation);
     
-    // 서버에서 대화 내용 가져오기
     try {
       const response = await axios.get(`http://localhost:5000/thread/${conversation.id}/messages`);
       const updatedConversation = { ...conversation, messages: response.data.messages };
@@ -126,7 +122,6 @@ function App() {
       );
       setConversations(updatedConversations);
       setActiveConversation(updatedConversation);
-      saveConversationsToLocalStorage();
     } catch (error) {
       console.error('대화 내용 가져오기 실패:', error);
       setError('대화 내용을 불러오는데 실패했습니다.');
@@ -138,7 +133,6 @@ function App() {
       conv.id === id ? { ...conv, name: newName } : conv
     );
     setConversations(updatedConversations);
-    saveConversationsToLocalStorage();
   };
 
   const deleteConversation = (id) => {
@@ -147,7 +141,6 @@ function App() {
     if (activeConversation && activeConversation.id === id) {
       setActiveConversation(null);
     }
-    saveConversationsToLocalStorage();
   };
 
   const resetAll = () => {
