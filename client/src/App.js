@@ -6,6 +6,9 @@ import ChatInterface from './components/ChatInterface';
 import ConversationList from './components/ConversationList';
 import ErrorMessage from './components/ErrorMessage';
 
+// Heroku 앱 URL을 상수로 정의
+const API_URL = 'https://temporarymagicnote.herokuapp.com';
+
 function App() {
   const [assistants, setAssistants] = useState([]);
   const [conversations, setConversations] = useState([]);
@@ -33,7 +36,7 @@ function App() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get('http://localhost:5000/assistants');
+      const response = await axios.get(`${API_URL}/assistants`);
       setAssistants(response.data);
     } catch (error) {
       console.error('Assistant 가져오기 오류:', error);
@@ -56,7 +59,7 @@ function App() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.post('http://localhost:5000/conversation', { assistantId: assistant.id });
+      const response = await axios.post(`${API_URL}/conversation`, { assistantId: assistant.id });
       const newConversation = {
         id: response.data.threadId,
         assistant: assistant,
@@ -81,7 +84,7 @@ function App() {
     setError(null);
 
     try {
-      const response = await axios.post('http://localhost:5000/message', {
+      const response = await axios.post(`${API_URL}/message`, {
         threadId: activeConversation.id,
         message: content,
         assistantId: activeConversation.assistant.id
@@ -115,7 +118,7 @@ function App() {
     setActiveConversation(conversation);
     
     try {
-      const response = await axios.get(`http://localhost:5000/thread/${conversation.id}/messages`);
+      const response = await axios.get(`${API_URL}/thread/${conversation.id}/messages`);
       const updatedConversation = { ...conversation, messages: response.data.messages };
       const updatedConversations = conversations.map(conv =>
         conv.id === conversation.id ? updatedConversation : conv
