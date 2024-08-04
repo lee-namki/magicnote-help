@@ -19,6 +19,16 @@ function ChatInterface({ conversation, sendMessage, isLoading }) {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      handleSubmit(e);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+  };
+
   if (!conversation) {
     return <div className="chat-interface">대화를 선택하거나 새로운 대화를 시작하세요.</div>;
   }
@@ -48,11 +58,11 @@ function ChatInterface({ conversation, sendMessage, isLoading }) {
         <div ref={messagesEndRef} />
       </div>
       <form onSubmit={handleSubmit} className="chat-form">
-        <input
-          type="text"
+        <textarea
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="메시지를 입력하세요..."
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="메시지를 입력하세요... (Ctrl+Enter로 전송)"
           disabled={isLoading}
         />
         <button type="submit" disabled={isLoading}>전송</button>
