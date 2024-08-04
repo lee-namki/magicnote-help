@@ -20,7 +20,8 @@ function ChatInterface({ conversation, sendMessage, isLoading }) {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && e.ctrlKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       handleSubmit(e);
     }
   };
@@ -62,7 +63,7 @@ function ChatInterface({ conversation, sendMessage, isLoading }) {
           value={input}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="메시지를 입력하세요... (Ctrl+Enter로 전송)"
+          placeholder="메시지를 입력하세요... (Enter로 전송, Shift+Enter로 줄바꿈)"
           disabled={isLoading}
         />
         <button type="submit" disabled={isLoading}>전송</button>
