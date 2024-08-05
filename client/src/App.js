@@ -154,7 +154,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>OpenAI Assistant API 데모</h1>
+      <h1>전지전능한 매직노트 연구 결과물</h1>
       {error && <ErrorMessage message={error} />}
       <div className="main-container">
         <div className="sidebar">
