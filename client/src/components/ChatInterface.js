@@ -20,7 +20,7 @@ function ChatInterface({ conversation, sendMessage, isLoading }) {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && e.ctrlKey) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -28,6 +28,15 @@ function ChatInterface({ conversation, sendMessage, isLoading }) {
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
+  };
+
+  const copyToClipboard = (text) => {
+    const cleanedText = text.replace(/\*\*|【.*?】|\[.*?\]/g, '').trim();
+    navigator.clipboard.writeText(cleanedText).then(() => {
+      alert('텍스트가 클립보드에 복사되었습니다.');
+    }).catch(err => {
+      console.error('복사 중 오류가 발생했습니다:', err);
+    });
   };
 
   if (!conversation) {
@@ -42,6 +51,11 @@ function ChatInterface({ conversation, sendMessage, isLoading }) {
           <div key={index} className={`message ${msg.isUser ? 'user' : 'assistant'}`}>
             <div className="message-sender">{msg.isUser ? '학생' : 'Magicnote'}</div>
             <div className="message-content">{msg.content}</div>
+            {!msg.isUser && (
+              <button className="copy-button" onClick={() => copyToClipboard(msg.content)}>
+                복사
+              </button>
+            )}
           </div>
         ))}
         {isLoading && (
@@ -63,7 +77,7 @@ function ChatInterface({ conversation, sendMessage, isLoading }) {
           value={input}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="메시지를 입력하세요... (Enter로 전송, Shift+Enter로 줄바꿈)"
+          placeholder="메시지를 입력하세요... (Ctrl+Enter로 전송)"
           disabled={isLoading}
         />
         <button type="submit" disabled={isLoading}>전송</button>
